@@ -5,7 +5,7 @@ FP="src/$D.md"
 LAST_ENTRY=$(find src/ -name '*.md' | sort -nr | head -n 1)
 TEMPLATE=$(cat << EOF
 ---
-title: nippo $D
+title: log $D
 ---
 
 EOF
