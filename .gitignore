@@ -1,1 +1,4 @@
 .*.swp
+node_modules
+filters/*
+!filters/*.hs

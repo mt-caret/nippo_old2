@@ -9,10 +9,14 @@ PFLAGS += --standalone
 PFLAGS += --strip-comments
 PFLAGS += --section-divs
 PFLAGS += --filter pandoc-sidenote
+#PFLAGS += --filter filters/RenderMath
 PFLAGS += --template=tufte
 PFLAGS += --css=./normalize.css
 PFLAGS += --css=./tufte.min.css
+PFLAGS += --css=./tufte-extra.css
 PFLAGS += --css=./pandoc.css
+#PFLAGS += --css=./katex.min.css
+PFLAGS += --katex
 
 CPFLAGS := -V include-after='<script src="https://utteranc.es/client.js" repo="mt-caret/nippo" issue-term="title" theme="github-light" crossorigin="anonymous" async></script>'
 
@@ -21,7 +25,7 @@ docs/img/%.png: img/%.png
 	@echo "$< -> $@"
 	@optipng -o2 -clobber $< -out $@
 
-docs/%.html: src/%.md
+docs/%.html: src/%.md filters/RenderMath
 	@mkdir -p docs
 	@echo "$< -> $@"
 	@pandoc $(PFLAGS) $(CPFLAGS) -V include-after='$(shell ./navigation.sh $<)' $< --output=$@
@@ -30,6 +34,9 @@ docs/index.html: $(SRC)
 	@mkdir -p docs
 	@echo "./index.sh -> $@"
 	@./index.sh | pandoc $(PFLAGS) --output=$@
+
+filters/%: filters/%.hs
+	stack --resolver lts-14.16 --install-ghc ghc --package pandoc-types --package text -- $< -o $@
 
 .PHONY: clean
 clean:

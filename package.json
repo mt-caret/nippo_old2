@@ -1,0 +1,25 @@
+{
+  "name": "nippo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mt-caret/nippo.git"
+  },
+  "author": "mt-caret",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mt-caret/nippo/issues"
+  },
+  "homepage": "https://github.com/mt-caret/nippo#readme",
+  "dependencies": {
+    "katex": "^0.11.1"
+  }
+}
