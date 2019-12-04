@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">-->
+  <title>log 2019-12-03</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="./normalize.css">
+  <link rel="stylesheet" href="./tufte.min.css">
+  <link rel="stylesheet" href="./tufte-extra.css">
+  <link rel="stylesheet" href="./pandoc.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    var mathElements = document.getElementsByClassName("math");
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") { katex.render(texText.data, mathElements[i], { displayMode: mathElements[i].classList.contains("display"), throwOnError: false } );
+    }}});</script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<article>
+<header>
+<h1 class="title">log 2019-12-03</h1>
+</header>
+<section id="databases-and-isolation-levels" class="level2">
+<h2>Databases and Isolation Levels</h2>
+<p>I just learned about transaction isolation levels for databases, so I’m going to do a quick writeup about what they are.</p>
+<p>Databases have a concept of transactions in order to provide ACID operations to users. ACID stands for:</p>
+<ul>
+<li>Atomicity: transactions are indivisible (i.e. either completely happens or doesn’t)</li>
+<li>Consistency: invariants are preserved across transactions</li>
+<li>Isolation: transactions are executed as if they occur in sequential order</li>
+<li>Durability: transactions, once complete, are persistent even in cases of system failure</li>
+</ul>
+<p>These all seem to be nice things to have when building an application that interacts with a database. One problem with ACID is how to ensure Isolation. For example, naively locking the whole database on every transaction will make sure that all transactions behave as if they have occurred sequentially (because they are really executed one after another), but doing this is obviously pretty inefficient. Besides, it’s probably not the case that we need perfect isolation for every transaction. So, one approach we can take is to define various degrees of isolation, or <em>isolation levels</em>, which provide different guarantees and let the user decide on the tradeoff between isolation and efficiency.</p>
+<p>The standard that comes up in discussions of isolation levels is the <a href="http://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt">ISO/IEC 9075:1992 SQL standard</a><span><label for="sn-1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-1" class="margin-toggle"/><span class="sidenote">See <a href="https://blog.ansi.org/2018/10/sql-standard-iso-iec-9075-2016-ansi-x3-135/">The SQL Standard - ISO/IEC 9075:2016 - ANSI Blog</a> for a brief history on SQL standards.<br />
+<br />
+</span></span> which specifies four isolation levels from weaker to stronger guarantees: READ UNCOMMITED, READ COMMITED, REPEATABLE READ, and SERIALIZABLE. The standard then specifies what sort of behavior is permitted for each isolation level.</p>
+<p>There are three kinds of problems which can occur for concurrent transactions which are specified by the standard: dirty reads, non-repeatable reads, and phantom reads. Let’s look at them in order.<span><label for="sn-2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-2" class="margin-toggle"/><span class="sidenote">The following examples and explanations are heavily based on the SQL standard.<br />
+<br />
+</span></span></p>
+<section id="dirty-reads" class="level3">
+<h3>Dirty Reads</h3>
+<p>Dirty reads are when a transaction sees modifications by another transaction which eventually aborts. For example, consider the following series of events, where <span class="math inline">T_1, T_2</span> are transactions and <span class="math inline">R_1</span> is a row.</p>
+<figure>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">time</th>
+<th style="text-align: center;"><span class="math inline">T_1</span></th>
+<th style="text-align: center;"><span class="math inline">T_2</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">t</span></td>
+<td style="text-align: center;">modify <span class="math inline">R_1</span></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">t+1</span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">read <span class="math inline">R_1</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">t+2</span></td>
+<td style="text-align: center;">rollback</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+</tr>
+</tbody>
+</table>
+</figure>
+<p>Transaction <span class="math inline">T_2</span> would end up reading a value from <span class="math inline">R_1</span> which never should have been seen from the point of view of the database. Note that this may violate consistency (in ACID) as well, as invariants are only guaranteed before and after transactions, but not in between.</p>
+</section>
+<section id="non-repeatable-reads" class="level3">
+<h3>Non-repeatable Reads</h3>
+<p>Non-repeatable reads are when a transaction sees changes between two reads of the same row. A simple example of how this might happen:</p>
+<figure>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">time</th>
+<th style="text-align: center;"><span class="math inline">T_1</span></th>
+<th style="text-align: center;"><span class="math inline">T_2</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">t</span></td>
+<td style="text-align: center;">read <span class="math inline">R_1</span></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">t+1</span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">modify <span class="math inline">R_1</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">t+2</span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">commit</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">t+3</span></td>
+<td style="text-align: center;">read <span class="math inline">R_1</span></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+</tr>
+</tbody>
+</table>
+</figure>
+<p>From the perspective of <span class="math inline">T_1</span>, the value of <span class="math inline">R_1</span> would be changing under it.</p>
+</section>
+<section id="phantom-reads" class="level3">
+<h3>Phantom Reads</h3>
+<p>While the standard merely refers to this as “phantom”, I’m going with this name as this is what seems to be used everywhere. Phantom reads are when insertions by other transactions change the results of the same queries. This differs from non-repeatable as the reads of rows themselves don’t change, but more rows might match queries.</p>
+<figure>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">time</th>
+<th style="text-align: center;"><span class="math inline">T_1</span></th>
+<th style="text-align: center;"><span class="math inline">T_2</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">t</span></td>
+<td style="text-align: center;">reads set of rows satisfying &lt;condition&gt;</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">t+1</span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">inserts rows (satisfying &lt;condition&gt;)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">t+2</span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">commit</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">t+3</span></td>
+<td style="text-align: center;">reads set of rows satisfying &lt;condition&gt;</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+</tr>
+</tbody>
+</table>
+</figure>
+<p>This sort of situation might occur when calculating an average across some rows, where counting rows and summing them up are done as seperate operations.</p>
+</section>
+<section id="isolation-levels" class="level3">
+<h3>Isolation Levels</h3>
+<p>The SQL standard defines isolation levels by which phenomena described above can happen.</p>
+<figure class="fullwidth">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">Dirty Reads</th>
+<th style="text-align: center;">Non-repeatable Reads</th>
+<th style="text-align: center;">Phantom Reads</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">READ UNCOMMITED</td>
+<td style="text-align: center;">Possible</td>
+<td style="text-align: center;">Possible</td>
+<td style="text-align: center;">Possible</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">READ COMMITED</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">Possible</td>
+<td style="text-align: center;">Possible</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">REPEATABLE READ</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">Possible</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">SERIALIZABLE</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+</figure>
+<p>So as stronger isolation levels are enforced, you’ll need to worry about less and less problems at the expense of performance.</p>
+<p>Now we know which sorts of guarantees can be made per the standard, which are supported by the major RDBs (and to what extent), and how are these isolation levels implemented? We’re going to investigate that tomorrow.</p>
+</section>
+</section>
+</article>
+<a href="./2019-12-02.html">2019-12-02</a> <a href="./index.html">index</a> <a href="#">#</a>
+<script src="https://utteranc.es/client.js" repo="mt-caret/nippo" issue-term="title" theme="github-light" crossorigin="anonymous" async></script>
+</body>
+</html>

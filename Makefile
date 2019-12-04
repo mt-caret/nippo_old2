@@ -35,6 +35,7 @@ docs/index.html: $(SRC)
 	@echo "./index.sh -> $@"
 	@./index.sh | pandoc $(PFLAGS) --output=$@
 
+.PRECIOUS: filters/%
 filters/%: filters/%.hs
 	stack --resolver lts-14.16 --install-ghc ghc --package pandoc-types --package text -- $< -o $@
 

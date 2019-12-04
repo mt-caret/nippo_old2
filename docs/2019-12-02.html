@@ -127,11 +127,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="mle" class="level2">
 <h2>MLE</h2>
+<p>assuming <span class="math inline">\mathbf{x}</span> is iid:</p>
 <p><span class="math display">
 \begin{aligned}
 \hat{\mathbf{\theta}}
 &amp;= \mathop{\rm argmax}\limits_\mathbf{\theta} p(\mathbf{x}_{1 \ldots N} |\mathbf{\theta} ) \\
-&amp;= \mathop{\rm argmax}\limits_\mathbf{\theta} \prod^N_{i=1} p(\mathbf{x_i} |\mathbf{\theta} )
+&amp;= \mathop{\rm argmax}\limits_\mathbf{\theta} \prod^N_{i=1} p(\mathbf{x}_i |\mathbf{\theta} )
 \end{aligned}
 </span></p>
 <p>where</p>
@@ -147,7 +148,7 @@ p(\mathbf{x}^* | \hat{\mathbf{\theta}})
 &amp;= \mathop{\rm argmax}\limits_\mathbf{\theta}p(\mathbf{\theta} |\mathbf{x}_{1 \ldots N}) \\
 &amp;= \mathop{\rm argmax}\limits_\mathbf{\theta} \frac{p(\mathbf{x}_{1 \ldots N} |\mathbf{\theta}) p(\mathbf{\theta})}{p(\mathbf{x}_{1 \ldots N})} \\
 &amp;= \mathop{\rm argmax}\limits_\mathbf{\theta} \frac{\prod^N_{i=1} p(\mathbf{x}_i |\mathbf{\theta}) p(\mathbf{\theta})}{p(\mathbf{x}_{1 \ldots N})} \\
-&amp;= \mathop{\rm argmax}\limits_\mathbf{\theta} \prod^N_{i=1} p(\mathbf{x}_i |\mathbf{\theta}) p(\mathbf{\theta})
+&amp;\propto \mathop{\rm argmax}\limits_\mathbf{\theta} \prod^N_{i=1} p(\mathbf{x}_i |\mathbf{\theta}) p(\mathbf{\theta})
 \end{aligned}
 </span></p>
 <p>where</p>
@@ -172,7 +173,7 @@ p(\mathbf{x}^* | \mathbf{x}_{1 \ldots N}) = \int p(\mathbf{x}^* | \mathbf{\theta
 </span></span></p>
 </section>
 </article>
-<a href="./2019-12-01.html">2019-12-01</a> <a href="./index.html">index</a> <a href="#">#</a>
+<a href="./2019-12-01.html">2019-12-01</a> <a href="./index.html">index</a> <a href="./2019-12-03.html">2019-12-03</a>
 <script src="https://utteranc.es/client.js" repo="mt-caret/nippo" issue-term="title" theme="github-light" crossorigin="anonymous" async></script>
 </body>
 </html>
