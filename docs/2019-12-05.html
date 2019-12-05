@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">-->
+  <title>log 2019-12-05</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="./normalize.css">
+  <link rel="stylesheet" href="./tufte.min.css">
+  <link rel="stylesheet" href="./tufte-extra.css">
+  <link rel="stylesheet" href="./pandoc.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    var mathElements = document.getElementsByClassName("math");
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") { katex.render(texText.data, mathElements[i], { displayMode: mathElements[i].classList.contains("display"), throwOnError: false } );
+    }}});</script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<article>
+<header>
+<h1 class="title">log 2019-12-05</h1>
+</header>
+<section id="the-laplace-approximation" class="level2">
+<h2>The Laplace Approximation</h2>
+<p>Yesterday during the PRML reading group, this topic came up and I was a bit confused, so today I want to write a bit about this.</p>
+<p>The concept of the laplace approximation itself is pretty simple: you can approximate some unimodal probability distribution <span class="math inline">p(x)</span> with a Gaussian, given you can find the mode <span class="math inline">x_0</span>.</p>
+<p>First, let <span class="math inline">f(x) = \log p(x)</span> so <span class="math inline">p(x) = \exp{(h(x))}</span>. Taking a taylor series approximation of <span class="math inline">f(x)</span> around <span class="math inline">x_0</span> gives the following:</p>
+<p><span class="math display">
+\begin{aligned}
+f(x)
+&amp;\approx h(x_0) + h&#39;(x_0) (x - x_0) + \frac{1}{2}h&#39;&#39;(x_0) (x - x_0)^2 \\
+&amp;\approx h(x_0) + \frac{1}{2}h&#39;&#39;(x_0) (x - x_0)^2
+\end{aligned}
+</span></p>
+<p>As <span class="math inline">x_0</span> is a mode, <span class="math inline">h&#39;(x_0) = 0</span> and the corresponding term disappears. Going back to <span class="math inline">p(x)</span>, this starts to look like a Gaussian.</p>
+<p><span class="math display">
+\begin{aligned}
+p(x) &amp;= \exp{(h(x))} \\
+&amp;\approx \exp{(h(x_0) + \frac{1}{2}h&#39;&#39;(x_0) (x - x_0)^2)} \\
+&amp;\approx \exp{(h(x_0))} \sqrt{\frac{2\pi}{- h&#39;&#39;(x_0)}} \mathcal{N}(x_0; -h&#39;&#39;(x_0)^{-1})
+\end{aligned}
+</span></p>
+<p>I was going to write a bit more on this topic, but unfortunately I’m seriously busy right now, so I’m going to leave further elaboration for another day. Here are a number of resources to refer back to later;</p>
+<ul>
+<li><a href="https://ufal.mff.cuni.cz/~jurcicek/NPFL108-BI-2014LS/04-approximate-inference-laplace-approximation.pdf">Laplace approximation</a></li>
+<li><a href="https://bookdown.org/rdpeng/advstatcomp/laplace-approximation.html#computing-the-posterior-mean">Advanced Statistical Computing</a></li>
+<li><a href="https://metacademy.org/graphs/concepts/laplace_approximation#focus=bayesian_model_comparison&amp;mode=learn">Bayesian model comparison - Metacademy</a></li>
+</ul>
+</section>
+</article>
+<a href="./2019-12-04.html">2019-12-04</a> <a href="./index.html">index</a> <a href="#">#</a>
+<script src="https://utteranc.es/client.js" repo="mt-caret/nippo" issue-term="title" theme="github-light" crossorigin="anonymous" async></script>
+</body>
+</html>
