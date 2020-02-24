@@ -8,6 +8,24 @@ TEMPLATE=$(cat << EOF
 title: log $D
 ---
 
+<section>
+
+<figure>
+
+|||
+|:-|:-:|
+
+</figure>
+
+
+
+</section>
+
+## daily info
+
+Weight:   
+Goal: 65.0kg
+
 EOF
 )
 if [ -f "$FP" ]; then
