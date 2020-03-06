@@ -21,6 +21,27 @@ title: log $D
 
 </section>
 
+## regimen
+
+- [ ] exercise
+  - [ ] Fit Boxing
+  - [ ] Ring Fit Adventure
+- [ ] meta-learning / productivity
+  - [ ] survey
+  - [ ] book
+- [ ] study
+  - [ ] spaced repitition
+  - [ ] quantum computing
+  - [ ] compilers and type systems
+  - [ ] machine learning
+  - [ ] lisp
+  - [ ] functional programming
+  - [ ] math
+  - [ ] numerical analysis
+- [ ] misc
+  - [ ] migrate password manager
+  - [ ] execute program
+
 ## daily info
 
 Weight:   
