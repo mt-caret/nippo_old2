@@ -30,13 +30,16 @@ title: log $D
   - [ ] survey
   - [ ] book
 - [ ] study
-  - [ ] spaced repitition
+  - [ ] duolingo
+  - [ ] spaced repetition
   - [ ] quantum computing
   - [ ] compilers and type systems
   - [ ] machine learning
   - [ ] lisp
   - [ ] functional programming
-  - [ ] math
+  - [ ] set theory
+  - [ ] abstract algebra
+  - [ ] linear algebra
   - [ ] numerical analysis
 - [ ] misc
   - [ ] migrate password manager

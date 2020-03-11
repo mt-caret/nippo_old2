@@ -16,6 +16,7 @@ PFLAGS += --css=./tufte.min.css
 PFLAGS += --css=./tufte-extra.css
 PFLAGS += --css=./pandoc.css
 #PFLAGS += --css=./katex.min.css
+PFLAGS += --css=./custom.css
 PFLAGS += --katex
 
 CPFLAGS := -V include-after='<script src="https://utteranc.es/client.js" repo="mt-caret/nippo" issue-term="title" theme="github-light" crossorigin="anonymous" async></script>'
