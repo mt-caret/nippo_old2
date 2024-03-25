@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/mt-caret/nippo#readme",
   "dependencies": {
-    "katex": "^0.11.1"
+    "katex": "^0.16.10"
   }
 }
